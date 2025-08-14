@@ -113,7 +113,7 @@ function parseDocument(source: string) {
 export function gql(
   literals: string | readonly string[],
   ...args: any[]
-) {
+): DocumentNode {
   if (typeof literals === 'string') {
     literals = [literals];
   }
@@ -148,25 +148,5 @@ export function enableExperimentalFragmentVariables() {
 export function disableExperimentalFragmentVariables() {
   experimentalFragmentVariables = false;
 }
-
-const extras = {
-  gql,
-  resetCaches,
-  disableFragmentWarnings,
-  enableExperimentalFragmentVariables,
-  disableExperimentalFragmentVariables,
-};
-
-export namespace gql {
-  export const {
-    gql,
-    resetCaches,
-    disableFragmentWarnings,
-    enableExperimentalFragmentVariables,
-    disableExperimentalFragmentVariables,
-  } = extras;
-}
-
-gql.default = gql;
 
 export default gql;

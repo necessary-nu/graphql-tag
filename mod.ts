@@ -12,10 +12,10 @@ export {
   enableExperimentalFragmentVariables,
   gql,
   resetCaches,
-} from './src/index.ts';
+} from './src/mod.ts';
 
 // Re-export the default export
-export { default } from './src/index.ts';
+export { default } from './src/mod.ts';
 
 // Re-export common GraphQL types that users might need
 export type {
