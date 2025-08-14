@@ -1,10 +1,12 @@
-import {
-  assert,
-  assertEquals,
-  assertExists,
-} from 'https://deno.land/std@0.208.0/assert/mod.ts';
+// deno-lint-ignore-file no-explicit-any
+import { assert, assertEquals, assertExists } from 'jsr:@std/assert@1';
 
-import gql from './index.ts';
+import gql, {
+  disableExperimentalFragmentVariables,
+  disableFragmentWarnings,
+  enableExperimentalFragmentVariables,
+  resetCaches,
+} from './mod.ts';
 
 // Basic gql functionality tests
 Deno.test('parses queries', () => {
@@ -33,13 +35,13 @@ Deno.test('allows interpolation of parsed fragment documents', () => {
 });
 
 Deno.test('parses experimental fragment variables', () => {
-  gql.enableExperimentalFragmentVariables();
+  enableExperimentalFragmentVariables();
 
-  const parsed: any = gql`fragment A ($arg: String!) on Type { testQuery }`;
+  const parsed = gql`fragment A ($arg: String!) on Type { testQuery }`;
   assertEquals(parsed.kind, 'Document');
-  assertExists(parsed.definitions[0].variableDefinitions);
+  assertExists((parsed.definitions[0] as any).variableDefinitions);
 
-  gql.disableExperimentalFragmentVariables();
+  disableExperimentalFragmentVariables();
 });
 
 Deno.test('returns the same object for the same query', () => {
@@ -100,9 +102,9 @@ Deno.test('can reference a fragment that references another fragment', () => {
 
 // Fragment warning tests
 Deno.test('fragment warnings - warns if you use the same fragment name for different fragments', () => {
-  gql.resetCaches();
+  resetCaches();
 
-  let warnings: string[] = [];
+  const warnings: string[] = [];
   const oldConsoleWarn = console.warn;
   console.warn = (w: string) => warnings.push(w);
 
@@ -118,9 +120,9 @@ Deno.test('fragment warnings - warns if you use the same fragment name for diffe
 });
 
 Deno.test('fragment warnings - does not warn if you use the same fragment name for the same fragment', () => {
-  gql.resetCaches();
+  resetCaches();
 
-  let warnings: string[] = [];
+  const warnings: string[] = [];
   const oldConsoleWarn = console.warn;
   console.warn = (w: string) => warnings.push(w);
 
@@ -137,7 +139,7 @@ Deno.test('fragment warnings - does not warn if you use the same fragment name f
 
 // Fragment deduplication tests
 Deno.test('strips duplicate fragments from the document', () => {
-  gql.resetCaches();
+  resetCaches();
 
   const frag1 = gql`fragment TestDuplicate on Bar { field }`;
   const query1 = gql`{ bar { fieldOne ...TestDuplicate } } ${frag1} ${frag1}`;
@@ -152,7 +154,7 @@ Deno.test('strips duplicate fragments from the document', () => {
 // Utility function tests
 Deno.test('resetCaches clears the document cache', () => {
   const query1 = gql`{ test }`;
-  gql.resetCaches();
+  resetCaches();
   const query2 = gql`{ test }`;
 
   // After reset, same query should be different object instances
@@ -161,10 +163,10 @@ Deno.test('resetCaches clears the document cache', () => {
 });
 
 Deno.test('fragment warnings can be disabled', () => {
-  gql.resetCaches();
-  gql.disableFragmentWarnings();
+  resetCaches();
+  disableFragmentWarnings();
 
-  let warnings: string[] = [];
+  const warnings: string[] = [];
   const oldConsoleWarn = console.warn;
   console.warn = (w: string) => warnings.push(w);
 

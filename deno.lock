@@ -1,11 +1,22 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@necessary/graphql@16.11.0-test.2": "16.11.0-test.2"
+    "jsr:@necessary/graphql@16.11.0-test.2": "16.11.0-test.2",
+    "jsr:@std/assert@1": "1.0.14",
+    "jsr:@std/internal@^1.0.10": "1.0.10"
   },
   "jsr": {
     "@necessary/graphql@16.11.0-test.2": {
       "integrity": "ea7b5d3dfcdbefd0e1cbf55284374d8cb010e4ef1db7952d56099a7f75f78724"
+    },
+    "@std/assert@1.0.14": {
+      "integrity": "68d0d4a43b365abc927f45a9b85c639ea18a9fab96ad92281e493e4ed84abaa4",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/internal@1.0.10": {
+      "integrity": "e3be62ce42cab0e177c27698e5d9800122f67b766a0bea6ca4867886cbde8cf7"
     }
   },
   "remote": {

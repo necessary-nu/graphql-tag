@@ -30,8 +30,8 @@ function processFragments(ast: DocumentNode) {
 
   ast.definitions.forEach((fragmentDefinition) => {
     if (fragmentDefinition.kind === 'FragmentDefinition') {
-      var fragmentName = fragmentDefinition.name.value;
-      var sourceKey = cacheKeyFromLoc(fragmentDefinition.loc!);
+      const fragmentName = fragmentDefinition.name.value;
+      const sourceKey = cacheKeyFromLoc(fragmentDefinition.loc!);
 
       // We know something about this fragment
       let sourceKeySet = fragmentSourceMap.get(fragmentName)!;
@@ -68,11 +68,16 @@ function processFragments(ast: DocumentNode) {
 }
 
 function stripLoc(doc: DocumentNode) {
-  const workSet = new Set<Record<string, any>>(doc.definitions);
+  const workSet = new Set<DefinitionNode>(doc.definitions);
 
   workSet.forEach((node) => {
-    if (node.loc) delete node.loc;
+    if (node.loc) {
+      // @ts-ignore: readonly property
+      delete node.loc;
+    }
+
     Object.keys(node).forEach((key) => {
+      // @ts-ignore: utter madness
       const value = node[key];
       if (value && typeof value === 'object') {
         workSet.add(value);
@@ -80,9 +85,11 @@ function stripLoc(doc: DocumentNode) {
     });
   });
 
-  const loc = doc.loc as Record<string, any>;
+  const loc = doc.loc;
   if (loc) {
+    // @ts-ignore: readonly property
     delete loc.startToken;
+    // @ts-ignore: readonly property
     delete loc.endToken;
   }
 
@@ -90,12 +97,11 @@ function stripLoc(doc: DocumentNode) {
 }
 
 function parseDocument(source: string) {
-  var cacheKey = normalize(source);
+  const cacheKey = normalize(source);
   if (!docCache.has(cacheKey)) {
     const parsed = parse(source, {
-      experimentalFragmentVariables,
       allowLegacyFragmentVariables: experimentalFragmentVariables,
-    } as any);
+    });
     if (!parsed || parsed.kind !== 'Document') {
       throw new Error('Not a valid GraphQL document.');
     }
@@ -112,6 +118,8 @@ function parseDocument(source: string) {
 // XXX This should eventually disallow arbitrary string interpolation, like Relay does
 export function gql(
   literals: string | readonly string[],
+  // complex type, let it be
+  // deno-lint-ignore no-explicit-any
   ...args: any[]
 ): DocumentNode {
   if (typeof literals === 'string') {
@@ -121,7 +129,7 @@ export function gql(
   let result = literals[0];
 
   args.forEach((arg, i) => {
-    if (arg && arg.kind === 'Document') {
+    if (arg && arg.kind === 'Document' && arg.loc != null) {
       result += arg.loc.source.body;
     } else {
       result += arg;
