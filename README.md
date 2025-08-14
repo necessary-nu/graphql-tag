@@ -1,48 +1,69 @@
-# graphql-tag (Deno Fork)
+# graphql-tag for Deno
 
-> **This is a Deno-compatible fork** of the original [graphql-tag](https://github.com/apollographql/graphql-tag) library, ported to work natively with Deno's modern JavaScript runtime.
+> **A Deno-native GraphQL tag library** - This is a complete port of [graphql-tag](https://github.com/apollographql/graphql-tag) rebuilt specifically for the Deno runtime.
 
-[![JSR](https://jsr.io/badges/@necessary/graphql)](https://jsr.io/@necessary/graphql) 
+[![JSR Package](https://jsr.io/badges/@necessary/graphql-tag)](https://jsr.io/@necessary/graphql-tag) 
 [![Deno CI](https://github.com/necessary/graphql-tag/actions/workflows/deno.yml/badge.svg)](https://github.com/necessary/graphql-tag/actions/workflows/deno.yml)
+![Deno Compatibility](https://img.shields.io/badge/deno-1.x%20%7C%202.x-brightgreen)
 
-**Key differences from the original:**
-- 🦕 **Deno-native**: No build step required, runs TypeScript directly
-- 📦 **JSR dependencies**: Uses JavaScript Registry instead of npm
-- 🧪 **Deno testing**: Uses Deno.test with standard library assertions
-- 🚀 **Modern tooling**: Built-in formatting, linting, and type checking
-- ❌ **No webpack loader**: Removed Node.js/webpack-specific features
+## Why Deno?
 
-Helpful utilities for parsing GraphQL queries in Deno. Includes:
+This library is purpose-built for Deno's modern JavaScript runtime:
+
+- **Zero build step** - TypeScript runs directly, no compilation needed
+- **JSR ecosystem** - Uses JavaScript Registry for fast, reliable dependencies  
+- **Secure by default** - Explicit permissions model
+- **Built-in testing** - No external test frameworks required
+- **Integrated tooling** - Formatting, linting, and type-checking included
+- **Web standards** - Modern APIs and ES modules throughout
+
+## What's Included
 
 - `gql` A JavaScript template literal tag that parses GraphQL query strings into the standard GraphQL AST.
 
 `graphql-tag` uses [the reference `graphql` library](https://jsr.io/@necessary/graphql) from JSR as a dependency.
 
-## Installation & Usage
+## Quick Start
 
-### Deno
-
-Import directly from JSR:
+### Option 1: Direct Import (Recommended)
 
 ```typescript
-import gql from 'jsr:@necessary/graphql-tag';
-// Or import from a specific version
 import gql from 'jsr:@necessary/graphql-tag@^2.12.6';
+
+const query = gql`
+  query GetUser($id: ID!) {
+    user(id: $id) {
+      name
+      email
+    }
+  }
+`;
 ```
 
-Or add to your `deno.json`:
+### Option 2: Add to deno.json
 
 ```json
 {
   "imports": {
-    "graphql-tag": "jsr:@necessary/graphql-tag@^2.12.6"
+    "gql": "jsr:@necessary/graphql-tag@^2.12.6"
   }
 }
 ```
 
-### Node.js/npm Users
+Then import:
+```typescript
+import gql from 'gql';
+```
 
-For Node.js projects, use the original [graphql-tag](https://www.npmjs.com/package/graphql-tag) from npm.
+### Option 3: Deno CLI
+
+```bash
+deno add @necessary/graphql-tag
+```
+
+---
+
+**Note for Node.js users:** This library is Deno-specific. For Node.js projects, use the original [graphql-tag](https://www.npmjs.com/package/graphql-tag) from npm.
 
 ### gql
 
@@ -133,25 +154,35 @@ That's where this package comes in - it lets you write your queries with [ES2015
 This package only has one feature - it caches previous parse results in a simple dictionary. This means that if you call the tag on the same query multiple times, it doesn't waste time parsing it again. It also means you can use `===` to compare queries to check if they are identical.
 
 
-### Development Commands
+## Development
 
-This Deno fork includes built-in development tasks:
+This project uses Deno's built-in tooling - no external dependencies needed:
 
 ```bash
-# Run tests
+# Run all tests
 deno task test
 
 # Type checking
 deno task check
 
-# Format code
+# Auto-format code
 deno task fmt
 
 # Lint code
 deno task lint
 
-# Development workflow (check + test)
+# Full development check
 deno task dev
+```
+
+### Running Tests
+```bash
+# All tests
+deno test --allow-read src/tests.ts
+
+# With coverage
+deno test --allow-read --coverage=coverage src/tests.ts
+deno coverage coverage
 ```
 
 ## Differences from Original graphql-tag
@@ -222,11 +253,15 @@ fragment SomeFragment ($arg: String!) on SomeType {
 
 ## Resources
 
-- [Original graphql-tag](https://github.com/apollographql/graphql-tag) - The Node.js version this fork is based on
-- [JSR @necessary/graphql](https://jsr.io/@necessary/graphql) - The Deno-compatible GraphQL library dependency
-- [GraphQL AST Explorer](https://astexplorer.net/#/drYr8X1rnP/1) - Explore GraphQL ASTs interactively
-- [Deno Documentation](https://docs.deno.com/) - Learn more about the Deno runtime
+- **[Deno Runtime](https://deno.com/)** - Modern JavaScript runtime
+- **[JSR Registry](https://jsr.io/@necessary/graphql-tag)** - This package on JSR  
+- **[GraphQL AST Explorer](https://astexplorer.net/#/drYr8X1rnP/1)** - Explore GraphQL ASTs interactively
+- **[Original graphql-tag](https://github.com/apollographql/graphql-tag)** - Node.js version (for reference)
 
 ## Contributing
 
-This is a community-maintained fork focused on Deno compatibility. For general GraphQL-tag features and bug reports that affect the core functionality, please consider contributing to the original [apollographql/graphql-tag](https://github.com/apollographql/graphql-tag) repository.
+This is a Deno-focused port. Contributions welcome! For core GraphQL functionality issues, consider also contributing upstream to [apollographql/graphql-tag](https://github.com/apollographql/graphql-tag).
+
+---
+
+**Built for Deno** - Fast, secure, and modern JavaScript runtime

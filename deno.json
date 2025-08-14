@@ -1,5 +1,5 @@
 {
-  "name": "@apollo/graphql-tag",
+  "name": "@necessary/graphql-tag",
   "version": "2.12.6-test.1",
   "exports": "./mod.ts",
   "tasks": {
