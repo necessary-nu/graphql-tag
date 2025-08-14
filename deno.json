@@ -31,5 +31,8 @@
   },
   "lint": {
     "include": ["src/", "mod.ts"]
+  },
+  "publish": {
+    "exclude": [".*", "CLAUDE.md"]
   }
 }
