@@ -1,10 +1,6 @@
 import { parse } from 'graphql';
 
-import {
-  DocumentNode,
-  DefinitionNode,
-  Location,
-} from 'graphql/language/ast';
+import type { DefinitionNode, DocumentNode, Location } from 'graphql';
 
 // A map docString -> graphql document
 const docCache = new Map<string, DocumentNode>();
@@ -32,7 +28,7 @@ function processFragments(ast: DocumentNode) {
   const seenKeys = new Set<string>();
   const definitions: DefinitionNode[] = [];
 
-  ast.definitions.forEach(fragmentDefinition => {
+  ast.definitions.forEach((fragmentDefinition) => {
     if (fragmentDefinition.kind === 'FragmentDefinition') {
       var fragmentName = fragmentDefinition.name.value;
       var sourceKey = cacheKeyFromLoc(fragmentDefinition.loc!);
@@ -43,12 +39,15 @@ function processFragments(ast: DocumentNode) {
         // this is a problem because the app developer is trying to register another fragment with
         // the same name as one previously registered. So, we tell them about it.
         if (printFragmentWarnings) {
-          console.warn("Warning: fragment with name " + fragmentName + " already exists.\n"
-            + "graphql-tag enforces all fragment names across your application to be unique; read more about\n"
-            + "this in the docs: http://dev.apollodata.com/core/fragments.html#unique-names");
+          console.warn(
+            'Warning: fragment with name ' + fragmentName +
+              ' already exists.\n' +
+              'graphql-tag enforces all fragment names across your application to be unique; read more about\n' +
+              'this in the docs: http://dev.apollodata.com/core/fragments.html#unique-names',
+          );
         }
       } else if (!sourceKeySet) {
-        fragmentSourceMap.set(fragmentName, sourceKeySet = new Set);
+        fragmentSourceMap.set(fragmentName, sourceKeySet = new Set());
       }
 
       sourceKeySet.add(sourceKey);
@@ -71,9 +70,9 @@ function processFragments(ast: DocumentNode) {
 function stripLoc(doc: DocumentNode) {
   const workSet = new Set<Record<string, any>>(doc.definitions);
 
-  workSet.forEach(node => {
+  workSet.forEach((node) => {
     if (node.loc) delete node.loc;
-    Object.keys(node).forEach(key => {
+    Object.keys(node).forEach((key) => {
       const value = node[key];
       if (value && typeof value === 'object') {
         workSet.add(value);
@@ -115,7 +114,6 @@ export function gql(
   literals: string | readonly string[],
   ...args: any[]
 ) {
-
   if (typeof literals === 'string') {
     literals = [literals];
   }

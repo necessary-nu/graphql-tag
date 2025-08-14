@@ -1,14 +1,48 @@
-# graphql-tag
-[![npm version](https://badge.fury.io/js/graphql-tag.svg)](https://badge.fury.io/js/graphql-tag)
-[![Build Status](https://travis-ci.org/apollographql/graphql-tag.svg?branch=master)](https://travis-ci.org/apollographql/graphql-tag)
-[![Get on Slack](https://img.shields.io/badge/slack-join-orange.svg)](http://www.apollodata.com/#slack)
+# graphql-tag (Deno Fork)
 
-Helpful utilities for parsing GraphQL queries. Includes:
+> **This is a Deno-compatible fork** of the original [graphql-tag](https://github.com/apollographql/graphql-tag) library, ported to work natively with Deno's modern JavaScript runtime.
+
+[![JSR](https://jsr.io/badges/@necessary/graphql)](https://jsr.io/@necessary/graphql) 
+[![Deno CI](https://github.com/necessary/graphql-tag/actions/workflows/deno.yml/badge.svg)](https://github.com/necessary/graphql-tag/actions/workflows/deno.yml)
+
+**Key differences from the original:**
+- 🦕 **Deno-native**: No build step required, runs TypeScript directly
+- 📦 **JSR dependencies**: Uses JavaScript Registry instead of npm
+- 🧪 **Deno testing**: Uses Deno.test with standard library assertions
+- 🚀 **Modern tooling**: Built-in formatting, linting, and type checking
+- ❌ **No webpack loader**: Removed Node.js/webpack-specific features
+
+Helpful utilities for parsing GraphQL queries in Deno. Includes:
 
 - `gql` A JavaScript template literal tag that parses GraphQL query strings into the standard GraphQL AST.
-- `/loader` A webpack loader to preprocess queries
 
-`graphql-tag` uses [the reference `graphql` library](https://github.com/graphql/graphql-js) under the hood as a peer dependency, so in addition to installing this module, you'll also have to install `graphql`.
+`graphql-tag` uses [the reference `graphql` library](https://jsr.io/@necessary/graphql) from JSR as a dependency.
+
+## Installation & Usage
+
+### Deno
+
+Import directly from JSR:
+
+```typescript
+import gql from 'jsr:@necessary/graphql-tag';
+// Or import from a specific version
+import gql from 'jsr:@necessary/graphql-tag@^2.12.6';
+```
+
+Or add to your `deno.json`:
+
+```json
+{
+  "imports": {
+    "graphql-tag": "jsr:@necessary/graphql-tag@^2.12.6"
+  }
+}
+```
+
+### Node.js/npm Users
+
+For Node.js projects, use the original [graphql-tag](https://www.npmjs.com/package/graphql-tag) from npm.
 
 ### gql
 
@@ -99,124 +133,64 @@ That's where this package comes in - it lets you write your queries with [ES2015
 This package only has one feature - it caches previous parse results in a simple dictionary. This means that if you call the tag on the same query multiple times, it doesn't waste time parsing it again. It also means you can use `===` to compare queries to check if they are identical.
 
 
-### Importing graphQL files
+### Development Commands
 
-_To add support for importing `.graphql`/`.gql` files, see [Webpack loading and preprocessing](#webpack-loading-and-preprocessing) below._
+This Deno fork includes built-in development tasks:
 
-Given a file `MyQuery.graphql`
+```bash
+# Run tests
+deno task test
 
-```graphql
-query MyQuery {
-  ...
-}
+# Type checking
+deno task check
+
+# Format code
+deno task fmt
+
+# Lint code
+deno task lint
+
+# Development workflow (check + test)
+deno task dev
 ```
 
-If you have configured [the webpack graphql-tag/loader](#webpack-loading-and-preprocessing), you can import modules containing graphQL queries. The imported value will be the pre-built AST.
+## Differences from Original graphql-tag
 
-```js
-import MyQuery from 'query.graphql'
-```
+This Deno fork removes Node.js and build-tool specific features:
 
-#### Importing queries by name
+### ❌ Removed Features
+- **Webpack loader** (`graphql-tag/loader`) - Not applicable to Deno's module system
+- **Build-time preprocessing** - Deno compiles TypeScript directly
+- **CommonJS exports** - Uses modern ES modules only
+- **Flow type definitions** - Deno uses TypeScript natively
 
-You can also import query and fragment documents by name.
+### ✅ Maintained Features  
+- **Core `gql` functionality** - Template literal parsing works identically
+- **Fragment composition** - Template literal interpolation of fragments
+- **Document caching** - Performance optimization through result caching  
+- **Fragment warnings** - Duplicate fragment name detection
+- **Experimental fragment variables** - Optional feature flag support
 
-```graphql
-query MyQuery1 {
-  ...
-}
+## Migration from Node.js
 
-query MyQuery2 {
-  ...
-}
-```
+If you're migrating from the original graphql-tag:
 
-And in your JavaScript:
+```diff
+// Before (Node.js)
+- import gql from 'graphql-tag';
+// After (Deno)  
++ import gql from 'jsr:@necessary/graphql-tag';
 
-```javascript
-import { MyQuery1, MyQuery2 } from 'query.graphql'
-```
-
-### Preprocessing queries and fragments
-
-Preprocessing GraphQL queries and fragments into ASTs at build time can greatly improve load times.
-
-#### Babel preprocessing
-
-GraphQL queries can be compiled at build time using [babel-plugin-graphql-tag](https://github.com/gajus/babel-plugin-graphql-tag). Pre-compiling queries decreases script initialization time and reduces bundle sizes by potentially removing the need for `graphql-tag` at runtime.
-
-#### TypeScript preprocessing
-
-Try this custom transformer to pre-compile your GraphQL queries in TypeScript: [ts-transform-graphql-tag](https://github.com/firede/ts-transform-graphql-tag).
-
-#### React Native and Next.js preprocessing
-
-Preprocessing queries via the webpack loader is not always possible. [babel-plugin-import-graphql](https://www.npmjs.com/package/babel-plugin-import-graphql) supports importing graphql files directly into your JavaScript by preprocessing GraphQL queries into ASTs at compile-time.
-
-E.g.:
-
-```javascript
-import myImportedQuery from './productsQuery.graphql'
-
-class ProductsPage extends React.Component {
-  ...
-}
-```
-
-#### Webpack loading and preprocessing
-
-Using the included `graphql-tag/loader` it is possible to maintain query logic that is separate from the rest of your application logic. With the loader configured, imported graphQL files will be converted to AST during the webpack build process.
-
-_**Example webpack configuration**_
-
-```js
-{
-  ...
-  loaders: [
-    {
-      test: /\.(graphql|gql)$/,
-      exclude: /node_modules/,
-      loader: 'graphql-tag/loader'
+// Usage remains the same
+const query = gql`
+  query GetUser($id: ID!) {
+    user(id: $id) {
+      name
+      email
     }
-  ],
-  ...
-}
+  }
+`;
 ```
-
-#### Create React App
-
-Preprocessing GraphQL imports is supported in **create-react-app** >= v2 using [evenchange4/graphql.macro](https://github.com/evenchange4/graphql.macro).
-
-For **create-react-app** < v2, you'll either need to eject or use [react-app-rewire-inline-import-graphql-ast](https://www.npmjs.com/package/react-app-rewire-inline-import-graphql-ast).
-
-#### Testing
-
-Testing environments that don't support Webpack require additional configuration. For [Jest](https://facebook.github.io/jest/) use [jest-transform-graphql](https://github.com/remind101/jest-transform-graphql).
-
-#### Support for fragments
-
-With the webpack loader, you can import fragments by name:
-
-In a file called `query.gql`:
-
-```graphql
-fragment MyFragment1 on MyType1 {
-  ...
-}
-
-fragment MyFragment2 on MyType2 {
-  ...
-}
-```
-
-And in your JavaScript:
-
-```javascript
-import { MyFragment1, MyFragment2 } from 'query.gql'
-```
-
-Note: If your fragment references other fragments, the resulting document will
-have multiple fragments in it. In this case you must still specify the fragment name when using the fragment. For example, with `@apollo/client` you would specify the `fragmentName` option when using the fragment for cache operations.
 
 ### Warnings
 
@@ -246,6 +220,13 @@ fragment SomeFragment ($arg: String!) on SomeType {
 }
 ```
 
-### Resources
+## Resources
 
-You can easily generate and explore a GraphQL AST on [astexplorer.net](https://astexplorer.net/#/drYr8X1rnP/1).
+- [Original graphql-tag](https://github.com/apollographql/graphql-tag) - The Node.js version this fork is based on
+- [JSR @necessary/graphql](https://jsr.io/@necessary/graphql) - The Deno-compatible GraphQL library dependency
+- [GraphQL AST Explorer](https://astexplorer.net/#/drYr8X1rnP/1) - Explore GraphQL ASTs interactively
+- [Deno Documentation](https://docs.deno.com/) - Learn more about the Deno runtime
+
+## Contributing
+
+This is a community-maintained fork focused on Deno compatibility. For general GraphQL-tag features and bug reports that affect the core functionality, please consider contributing to the original [apollographql/graphql-tag](https://github.com/apollographql/graphql-tag) repository.

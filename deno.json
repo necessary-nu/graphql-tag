@@ -1,0 +1,35 @@
+{
+  "name": "@apollo/graphql-tag",
+  "version": "2.12.6-test.1",
+  "exports": "./mod.ts",
+  "tasks": {
+    "test": "deno test --allow-read src/tests.ts",
+    "fmt": "deno fmt",
+    "lint": "deno lint",
+    "check": "deno check mod.ts",
+    "dev": "deno check mod.ts && deno test --allow-read src/tests.ts"
+  },
+  "imports": {
+    "graphql": "jsr:@necessary/graphql@16.11.0-test.2"
+  },
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": true,
+    "lib": ["ES2020", "DOM", "deno.ns"]
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 80,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve",
+    "include": ["src/", "mod.ts"]
+  },
+  "lint": {
+    "include": ["src/", "mod.ts"]
+  }
+}
