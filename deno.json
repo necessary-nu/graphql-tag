@@ -1,6 +1,6 @@
 {
   "name": "@necessary/graphql-tag",
-  "version": "2.12.6-test.1",
+  "version": "2.12.6-test.2",
   "exports": "./mod.ts",
   "tasks": {
     "test": "deno test --allow-read src/tests.ts",
